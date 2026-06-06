@@ -3,7 +3,7 @@
 7일 동안 아기고양이를 돌보는 귀여운 브라우저 육성 게임이에요.
 아이와 함께 만들었어요!
 
-👉 **[지금 플레이하기](https://USERNAME.github.io/REPO-NAME/)** (배포 후 실제 주소로 바꿔주세요)
+👉 **[지금 플레이하기](https://youngs2000-pixel.github.io/chloe/)** (아래 GitHub Pages 설정 후 활성화돼요)
 
 ## 🎮 게임 방법
 
