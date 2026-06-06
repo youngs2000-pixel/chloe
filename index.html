@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아기고양이 임시 집사 🐱</title>
+<style>
+  :root{
+    --bg1:#ffe9f3; --bg2:#e7f0ff; --card:#fffdf9; --ink:#5a4b52;
+    --pink:#ff8bbd; --pink-d:#ff5fa2; --orange:#ffb259; --green:#7fd6a0;
+    --blue:#7bb8ff; --purple:#c79bff; --line:#f0dbe6;
+    --shadow:0 10px 30px rgba(255,120,170,.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",system-ui,sans-serif;
+    color:var(--ink);
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:16px;
+  }
+  .app{
+    width:100%; max-width:460px; background:var(--card);
+    border-radius:28px; box-shadow:var(--shadow); overflow:hidden;
+    border:3px solid #fff;
+  }
+  .topbar{
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    color:#fff; padding:14px 18px; display:flex; align-items:center;
+    justify-content:space-between; gap:8px;
+  }
+  .topbar .title{font-weight:800; font-size:16px; letter-spacing:.3px;}
+  .topbar .sub{font-size:12px; opacity:.95;}
+  .stars{font-size:14px; white-space:nowrap;}
+  .screen{padding:20px;}
+
+  h1.big{font-size:24px; text-align:center; margin:10px 0 4px;}
+  .tagline{text-align:center; color:#9a8a92; font-size:13px; line-height:1.7; margin-bottom:18px;}
+
+  .cat-stage{
+    text-align:center; background:linear-gradient(180deg,#fff6fb,#eef5ff);
+    border-radius:22px; padding:16px 12px; border:2px dashed var(--line);
+    margin-bottom:14px;
+  }
+  .cat-emoji{font-size:46px; line-height:1;}
+  pre.cat{
+    font-family:"Consolas","Courier New",monospace; font-size:15px; line-height:1.25;
+    margin:6px 0 0; color:#7a6a72; white-space:pre;
+  }
+  .cat-name{margin-top:8px; font-weight:800; font-size:15px;}
+  .cat-name small{font-weight:600; color:#b09aa4;}
+
+  .stats{display:flex; flex-direction:column; gap:9px; margin-bottom:14px;}
+  .stat{display:flex; align-items:center; gap:9px; font-size:13px;}
+  .stat .lab{width:52px; font-weight:700; flex:none;}
+  .stat .track{flex:1; height:16px; background:#f1e7ee; border-radius:10px; overflow:hidden;}
+  .stat .fill{height:100%; width:0; border-radius:10px; transition:width .5s ease;}
+  .stat .num{width:34px; text-align:right; font-variant-numeric:tabular-nums; color:#9a8a92; flex:none;}
+  .f-hunger{background:var(--orange);} .f-mood{background:var(--pink);}
+  .f-health{background:var(--green);} .f-sleep{background:var(--blue);}
+  .f-aff{background:var(--purple);}
+
+  .panel{background:#fff; border:2px solid var(--line); border-radius:20px; padding:14px; margin-top:4px;}
+  .panel h3{margin:0 0 10px; font-size:15px;}
+  .hint{background:#fff6da; border:1px solid #ffe9a6; color:#9c7a16;
+        border-radius:14px; padding:9px 12px; font-size:12.5px; margin:8px 0; line-height:1.6;}
+  .event-banner{background:#f3ecff; border:1px solid #e0d0ff; color:#6b4bb0;
+        border-radius:14px; padding:10px 12px; font-size:13px; margin-bottom:10px; line-height:1.7;}
+  .event-banner b{display:block; margin-bottom:4px;}
+
+  .react{font-size:14px; line-height:1.8; min-height:48px; margin-bottom:8px;}
+  .changes{display:flex; flex-wrap:wrap; gap:6px; margin:8px 0;}
+  .chip{font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px;
+        background:#fdeef6; color:var(--pink-d); border:1px solid #ffd6e8;}
+  .chip.bad{background:#eef4ff; color:#5a86d6; border-color:#cfe0ff;}
+
+  .btns{display:flex; flex-direction:column; gap:9px;}
+  button{
+    font-family:inherit; font-size:14.5px; font-weight:700; color:#6b5660;
+    background:#fff; border:2px solid var(--line); border-radius:16px;
+    padding:13px 14px; cursor:pointer; transition:transform .08s, box-shadow .15s, background .15s;
+    text-align:left;
+  }
+  button:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(255,140,180,.18);}
+  button:active{transform:translateY(0);}
+  button .desc{display:block; font-weight:500; font-size:11.5px; color:#aa97a1; margin-top:3px;}
+  button.primary{background:linear-gradient(135deg,var(--pink),var(--pink-d)); color:#fff; border-color:transparent; text-align:center;}
+  button.ghost{background:#faf3f8;}
+  button:disabled{opacity:.45; cursor:not-allowed;}
+  .row{display:flex; gap:9px;} .row>button{flex:1; text-align:center;}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:13px; font-weight:700; margin-bottom:6px;}
+  .field input{width:100%; font-family:inherit; font-size:15px; padding:12px 14px;
+        border:2px solid var(--line); border-radius:14px; color:var(--ink); background:#fffdfb;}
+  .field input:focus{outline:none; border-color:var(--pink);}
+
+  .pers-list{display:flex; flex-direction:column; gap:8px; margin-bottom:6px;}
+  .pers{border:2px solid var(--line); border-radius:14px; padding:11px 12px; cursor:pointer; background:#fff;}
+  .pers:hover{border-color:var(--pink);}
+  .pers.sel{border-color:var(--pink-d); background:#fff2f8;}
+  .pers b{font-size:14px;} .pers span{display:block; font-size:11.5px; color:#a8949e; margin-top:3px;}
+
+  .meter{font-size:12px; color:#b09aa4; text-align:center; margin-top:2px;}
+  .center{text-align:center;}
+  .ending pre.cat{font-size:14px;}
+  .ending-title{font-size:20px; font-weight:800; text-align:center; margin:6px 0 12px;}
+  .day-record{font-size:13px; line-height:2; text-align:center; margin:10px 0;}
+  .footer-note{font-size:11px; color:#c3b2bb; text-align:center; padding:10px;}
+  .toast{font-size:13px; line-height:1.7; background:#fff; border:2px solid var(--line);
+         border-radius:14px; padding:10px 12px; margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div>
+      <div class="title">🐱 아기고양이 임시 집사</div>
+      <div class="sub" id="topSub">7일간의 돌봄 이야기</div>
+    </div>
+    <div class="stars" id="topStars"></div>
+  </div>
+  <div class="screen" id="screen"></div>
+  <div class="footer-note">아이와 함께 만든 게임 · Baby Cat Caretaker</div>
+</div>
+
+<script>
+"use strict";
+// ───────────────────────────────────────────────
+// 데이터 (파이썬판 그대로 이식)
+// ───────────────────────────────────────────────
+const CAT_FACES = {
+  happy:   {ascii:" /\\_/\\ \n( ^w^ )\n > v < ", emoji:"😺"},
+  excited: {ascii:" /\\_/\\ \n(*^w^*)\n > * < ", emoji:"😸"},
+  normal:  {ascii:" /\\_/\\ \n( -.- )\n > . < ", emoji:"🐱"},
+  sad:     {ascii:" /\\_/\\ \n( T-T )\n > _ < ", emoji:"😿"},
+  sick:    {ascii:" /\\_/\\ \n( x_x )\n > ~ < ", emoji:"🤒"},
+  sleepy:  {ascii:" /\\_/\\ \n( -_-)\n > z < ", emoji:"😴"},
+  scared:  {ascii:" /\\_/\\ \n( o_o )\n > ! < ", emoji:"🙀"},
+  hungry:  {ascii:" /\\_/\\ \n( @.@)\n > o < ", emoji:"😼"},
+};
+
+const PERSONALITIES = {
+  "활발이":  {desc:"호기심 많고 장난꾸러기예요. 장난감을 아주 좋아해요.", play_bonus:12, food_bonus:0,  sleep_rate:1.1, mood_start:60},
+  "얌전이":  {desc:"조용하고 얌전해요. 따뜻한 곳에서 쉬는 걸 좋아해요.",   play_bonus:0,  food_bonus:5,  sleep_rate:0.8, mood_start:55},
+  "겁쟁이":  {desc:"겁이 조금 많아요. 익숙해지면 아주 다정해져요.",       play_bonus:0,  food_bonus:0,  sleep_rate:1.2, mood_start:45},
+  "먹보":    {desc:"먹는 것을 정말 좋아해요. 맛있는 밥을 주면 엄청 기뻐해요.", play_bonus:0, food_bonus:12, sleep_rate:1.0, mood_start:60},
+  "애교쟁이":{desc:"애교가 넘쳐요. 쓰다듬어 주면 기분이 팍팍 올라가요.",   play_bonus:6,  food_bonus:6,  sleep_rate:0.9, mood_start:65},
+};
+
+const FOODS = {
+  "아기고양이용 우유":   {hunger:-25, mood:5,  health:2,  sleep:0,  tummy_risk:0,  desc:"부드럽고 안전해요. 아기 고양이에게 딱 맞아요."},
+  "부드러운 고양이 사료":{hunger:-35, mood:5,  health:3,  sleep:5,  tummy_risk:0,  desc:"든든한 밥이에요. 배고픔을 크게 줄여줘요."},
+  "참치캔":             {hunger:-28, mood:20, health:-5, sleep:0,  tummy_risk:25, desc:"고양이가 아주 좋아해요. 너무 자주 주면 배탈 날 수 있어요!"},
+};
+
+const FOOD_REACTIONS = {
+  "아기고양이용 우유":{
+    hungry:["{c}이(가) 우유 그릇에 코를 박고 꿀꺽꿀꺽 마셨어요. 배가 많이 고팠나봐요!","{c}이(가) 우유를 단숨에 다 마셔버렸어요."],
+    sleepy:["{c}이(가) 우유를 두 모금 마시더니 눈을 깜빡였어요. 졸음이 더 강한가봐요.","먹다가 꾸벅꾸벅 조는 {c}이(가) 너무 귀여워요."],
+    happy:["우유를 다 마신 {c}이(가) 다가와 머리를 살짝 비볐어요!","{c}이(가) 우유를 마시고 꼬리를 살랑살랑 흔들었어요."],
+    sick:["{c}이(가) 우유를 조금 마시고 조용히 담요 위에 웅크렸어요.","몸이 안 좋은지 {c}이(가) 우유를 조금씩 천천히 마셨어요."],
+    moody:["{c}이(가) 우유 냄새를 맡고는 고개를 살짝 돌렸어요. 오늘은 기분이 안 좋은가봐요."],
+    normal:["{c}이(가) 우유 그릇에 코를 가까이 대더니 조심스럽게 핥기 시작했어요. 꼬리를 살랑살랑 흔들었어요.","{c}이(가) 얌전히 우유를 마셨어요. 작은 소리로 '냐아' 했어요."],
+  },
+  "부드러운 고양이 사료":{
+    hungry:["{c}이(가) 기다렸다는 듯 사료 그릇으로 달려왔어요! 작은 입으로 열심히 먹는 모습이 귀여워요.","배가 많이 고팠는지 {c}이(가) 사료를 순식간에 다 먹었어요."],
+    sleepy:["{c}이(가) 사료를 먹다가 꾸벅꾸벅 졸기 시작했어요. 밥보다 잠이 더 필요한 것 같아요.","먹으면서 눈이 자꾸 감기는 {c}이(가) 사료 그릇 앞에서 졸고 있어요."],
+    sick:["{c}이(가) 사료를 조금 먹고는 멈췄어요. 아직 밥맛이 없는 것 같아요."],
+    normal:["{c}이(가) 사료를 오물오물 씹어 먹었어요. 배가 든든해졌는지 조용히 몸을 웅크렸어요.","{c}이(가) 얌전하게 사료를 다 먹었어요. 만족스러운 표정이에요."],
+  },
+  "참치캔":{
+    normal:["{c}이(가) 참치 냄새를 맡자마자 눈을 반짝였어요! 신나게 먹고 나서 앞발을 핥았어요.","참치를 본 {c}이(가) 작은 발로 그릇을 건드렸어요. 아주 맛있게 먹었어요!"],
+    tummy_bad:["{c}이(가) 참치를 조금 먹더니 배를 웅크렸어요. 오늘은 자극적인 음식이 맞지 않았나봐요.","참치를 먹던 {c}이(가) 갑자기 웅크렸어요. 배탈이 난 것 같아요. 앞으로 조심해요!"],
+    moody:["평소라면 좋아했을 참치인데, 오늘은 냄새만 맡고 뒤로 물러났어요."],
+    hungry:["{c}이(가) 참치를 보자마자 달려왔어요! 신나게 먹으면서 꼬리를 세웠어요."],
+  },
+};
+
+const ITEMS = {
+  "고양이 치료제":{type:"heal", cost:3, hunger:0,   mood:5,  health:30, sleep:-5,  desc:"건강을 크게 회복해요.", max:3},
+  "따뜻한 담요":  {type:"heal", cost:2, hunger:0,   mood:15, health:10, sleep:-20, desc:"졸리거나 기분이 안 좋을 때 안정시켜줘요.", max:3},
+  "영양 간식":    {type:"heal", cost:2, hunger:-10, mood:10, health:15, sleep:0,   desc:"건강과 기분을 조금 회복해줘요.", max:3},
+  "깃털 장난감":  {type:"play", cost:2, hunger:5,   mood:25, health:0,  sleep:12,  desc:"기분을 크게 올려줘요. 졸릴 때 쓰면 오히려 피곤해요.", max:3},
+  "작은 공":      {type:"play", cost:2, hunger:5,   mood:20, health:0,  sleep:8,   desc:"기분을 올려줘요. 활발한 날에 효과 좋아요.", max:3},
+  "털실뭉치":     {type:"play", cost:1, hunger:3,   mood:15, health:0,  sleep:15,  desc:"귀엽게 놀아요. 너무 많이 놀면 졸려질 수 있어요.", max:3},
+  "종이상자":     {type:"play", cost:1, hunger:0,   mood:20, health:5,  sleep:-5,  desc:"불안하거나 놀란 날 안정감을 줘요.", max:3},
+};
+
+const ITEM_REACTIONS = {
+  "고양이 치료제":["{c}이(가) 치료제를 먹고 조금 편안해진 표정을 지었어요. 한결 나아진 것 같아요.","치료제를 먹은 {c}이(가) 깊게 숨을 쉬었어요. 기운을 차리는 것 같아요."],
+  "따뜻한 담요":  ["{c}이(가) 따뜻한 담요 속으로 쏙 들어갔어요. 꼬리가 담요 밖으로 삐죽 나와 있어요.","담요를 킁킁 맡던 {c}이(가) 폭 파고들었어요. 곧 조용히 잠들었어요."],
+  "영양 간식":    ["{c}이(가) 영양 간식을 조심스럽게 먹었어요. 맛이 마음에 들었는지 입가를 핥았어요.","간식을 받은 {c}이(가) 앞발로 살짝 건드려보더니 맛있게 먹었어요."],
+  "깃털 장난감":  ["깃털이 흔들리자 {c}이(가) 눈이 동그래졌어요! 작은 앞발로 톡톡 건드리며 신나게 놀았어요.","{c}이(가) 깃털을 잡으려고 펄쩍펄쩍 뛰었어요! 아주 신이 났어요."],
+  "작은 공":      ["작은 공이 데굴데굴 굴러가자 {c}이(가) 뒤뚱뒤뚱 쫓아갔어요. 공을 잡고 뿌듯한 표정이에요.","{c}이(가) 공을 앞발로 탁 쳤어요. 공이 굴러가자 눈을 반짝이며 쫓아갔어요."],
+  "털실뭉치":     ["{c}이(가) 털실뭉치를 앞발로 건드리다가 살짝 엉켜버렸어요. 멍한 표정으로 앉아 있어요.","털실에 신나게 놀던 {c}이(가) 털실에 엉켜서 '냐?' 하는 표정을 지었어요."],
+  "종이상자":     ["{c}이(가) 종이상자 안으로 쏙 들어갔어요. 귀만 빼꼼 보이는 모습이 너무 귀여워요!","상자를 발견한 {c}이(가) 냄새를 맡더니 조심스럽게 들어갔어요. 아주 편안해 보여요."],
+};
+
+const EVENTS = [
+  {name:"까칠한 날", chance:0.15, desc:"오늘 {c}이(가) 왠지 기분이 좋지 않아 보여요. 평소 좋아하던 것도 시큰둥할 수 있어요.", hint:"놀이 아이템이나 따뜻한 담요로 달래줄 수 있어요.", mood:-20, health:0, sleep:0, toy_bored:false, tummy:false, positive:false},
+  {name:"낯선 소리에 놀란 날", chance:0.12, desc:"창밖에서 큰 소리가 났어요! {c}이(가) 깜짝 놀라 소파 밑으로 숨어버렸어요.", hint:"종이상자나 따뜻한 담요로 안정시켜 주세요.", mood:-25, health:0, sleep:15, toy_bored:false, tummy:false, positive:false},
+  {name:"장난감 싫증", chance:0.10, desc:"{c}이(가) 평소 좋아하던 장난감을 보고도 시큰둥해요. 다른 놀이가 필요한 것 같아요.", hint:"다른 종류의 놀이 아이템을 써보세요.", mood:-10, health:0, sleep:0, toy_bored:true, tummy:false, positive:false},
+  {name:"꾸벅꾸벅 피곤한 날", chance:0.15, desc:"{c}이(가) 계속 하품을 해요. 놀고 싶어 보이지만 눈꺼풀이 자꾸 감겨요.", hint:"억지로 놀아주지 말고 쉬게 해주세요.", mood:0, health:0, sleep:25, toy_bored:false, tummy:false, positive:false},
+  {name:"배가 예민한 날", chance:0.12, desc:"오늘 {c}이(가) 배가 조금 예민해 보여요. 아무 음식이나 주면 배탈이 날 수 있어요.", hint:"우유나 부드러운 사료를 주세요. 참치캔은 위험해요!", mood:0, health:-5, sleep:0, toy_bored:false, tummy:true, positive:false},
+  {name:"재채기 연발", chance:0.10, desc:"{c}이(가) '에취! 에취!' 재채기를 연달아 했어요. 감기 기운이 있나봐요.", hint:"따뜻한 담요로 보온하고 치료제를 써보세요.", mood:-5, health:-10, sleep:0, toy_bored:false, tummy:false, positive:false},
+  {name:"벌레 발견!", chance:0.10, desc:"{c}이(가) 바닥에서 작은 벌레를 발견했어요! 눈을 반짝이며 사냥 자세를 취했어요.", hint:"오늘은 기분이 아주 좋은 날이에요!", mood:15, health:0, sleep:-10, toy_bored:false, tummy:false, positive:true},
+  {name:"창가 햇살", chance:0.12, desc:"창가에 따뜻한 햇살이 들어와요. {c}이(가) 햇살을 받으며 기지개를 켰어요.", hint:"오늘은 기분 좋은 날이에요!", mood:10, health:5, sleep:0, toy_bored:false, tummy:false, positive:true},
+  {name:"배탈 조짐", chance:0.08, desc:"{c}이(가) 배를 핥으며 조금 웅크리고 있어요. 배가 살짝 안 좋은 것 같아요.", hint:"영양 간식이나 치료제로 돌봐주세요.", mood:-10, health:-8, sleep:0, toy_bored:false, tummy:false, positive:false},
+  {name:"아무 일도 없는 평화로운 날", chance:0.0, desc:"오늘은 {c}이(가) 아주 평온해 보여요.", hint:"", mood:0, health:0, sleep:0, toy_bored:false, tummy:false, positive:true},
+];
+
+const OWNER_LINES = {
+  5:["주인이 환하게 웃었어요. \"와, {c}이(가) 아주 편안하고 건강해 보여요! 정말 잘 돌봐주셨어요!\"","주인이 {c}을(를) 안아들고 기뻐했어요. \"{c}이(가) 이렇게 행복해 보이다니! 최고예요!\""],
+  4:["주인이 고개를 끄덕였어요. \"아주 잘 돌봐주셨네요. 내일도 이렇게 해주시면 좋겠어요.\"","주인이 흐뭇하게 웃었어요. \"{c}이(가) 잘 지낸 것 같아요. 정말 수고하셨어요.\""],
+  3:["주인이 {c}을(를) 살펴보았어요. \"나쁘지 않아요. 다만 내일은 조금 더 신경 써주면 좋겠어요.\"","주인이 고개를 갸웃했어요. \"음... 괜찮긴 한데, 조금 더 잘 돌볼 수 있을 것 같아요.\""],
+  2:["주인이 걱정스러운 표정으로 살펴보았어요. \"오늘 {c}이(가) 조금 힘들어 보이네요. 내일은 더 잘 살펴주세요.\"","주인이 한숨을 쉬었어요. \"{c}의 상태가 조금 걱정돼요. 내일은 더 신경 써주세요.\""],
+  1:["주인이 걱정스러운 얼굴로 {c}을(를) 꼭 안았어요. \"오늘은 많이 힘들었겠구나... 내일은 꼭 더 잘 부탁드려요.\"","주인이 미간을 찌푸렸어요. \"상태가 좋지 않네요. 아기고양이를 돌보는 건 세심한 일이에요.\""],
+};
+
+// ───────────────────────────────────────────────
+// 유틸
+// ───────────────────────────────────────────────
+const clamp = (v,lo=0,hi=100)=>Math.max(lo,Math.min(hi,v));
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+const C = s => s.replace(/\{c\}/g, gs ? gs.cname : "");
+const $ = id => document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function faceKey(mood,health,sleep){
+  if(health<30) return "sick";
+  if(sleep>70) return "sleepy";
+  if(mood>=75) return "excited";
+  if(mood>=55) return "happy";
+  if(mood>=35) return "normal";
+  return "sad";
+}
+
+// ───────────────────────────────────────────────
+// 게임 상태
+// ───────────────────────────────────────────────
+let gs = null;
+function newGame(pname,cname,pkey){
+  const pers = PERSONALITIES[pkey];
+  gs = {
+    pname, cname, pkey, pers,
+    day:1, total_stars:0, day_stars:[],
+    hunger:40, mood:pers.mood_start, health:80, sleep:20, affection:30,
+    inv:Object.fromEntries(Object.keys(ITEMS).map(k=>[k,0])),
+    event:null, fed:false, actions:0, max_actions:3, tuna_streak:0,
+  };
+}
+function mod(ch){
+  for(const k of ["hunger","mood","health","sleep","affection"]){
+    if(k in ch) gs[k]=clamp(gs[k]+ch[k]);
+  }
+}
+
+// ───────────────────────────────────────────────
+// 렌더 헬퍼
+// ───────────────────────────────────────────────
+function renderTop(){
+  if(!gs){ $("topSub").textContent="7일간의 돌봄 이야기"; $("topStars").textContent=""; return; }
+  $("topSub").textContent = `${gs.day}일차 / 7일`;
+  $("topStars").innerHTML = `⭐ ${gs.total_stars}`;
+}
+function statBlock(){
+  const fk = faceKey(gs.mood,gs.health,gs.sleep);
+  const f = CAT_FACES[fk];
+  const bar = (cls,v)=>`<div class="stat"><div class="lab">${cls.lab}</div>
+      <div class="track"><div class="fill ${cls.f}" style="width:${v}%"></div></div>
+      <div class="num">${v}</div></div>`;
+  return `
+  <div class="cat-stage">
+    <div class="cat-emoji">${f.emoji}</div>
+    <pre class="cat">${f.ascii}</pre>
+    <div class="cat-name">${gs.cname} <small>· ${gs.pkey}</small></div>
+  </div>
+  <div class="stats">
+    ${bar({lab:"배고픔",f:"f-hunger"},gs.hunger)}
+    ${bar({lab:"기분",  f:"f-mood"},  gs.mood)}
+    ${bar({lab:"건강",  f:"f-health"},gs.health)}
+    ${bar({lab:"졸림",  f:"f-sleep"}, gs.sleep)}
+    ${bar({lab:"친밀도",f:"f-aff"},   gs.affection)}
+  </div>`;
+}
+function render(html){ $("screen").innerHTML = html; renderTop(); }
+
+// ───────────────────────────────────────────────
+// 인트로 / 셋업
+// ───────────────────────────────────────────────
+function screenIntro(){
+  gs=null;
+  render(`
+    <h1 class="big">🐱 아기고양이 임시 집사</h1>
+    <div class="cat-stage">
+      <div class="cat-emoji">😺</div>
+      <pre class="cat"> /\\_/\\ \n( ^w^ )\n > v < </pre>
+    </div>
+    <p class="tagline">7일 동안 아기고양이를 돌봐주세요!<br>
+      매일 밥을 주고, 아이템을 사용하며<br>
+      배고픔 · 기분 · 건강 · 졸림을 관리해요.<br>
+      밤마다 주인이 찾아와 별점을 줄 거예요! ⭐</p>
+    <div class="btns"><button class="primary" onclick="screenSetup()">게임 시작하기</button></div>
+  `);
+}
+
+function screenSetup(){
+  let selPkey = null;
+  const persHtml = Object.entries(PERSONALITIES).map(([k,v])=>
+    `<div class="pers" data-k="${k}" onclick="selectPers('${k}')"><b>${k}</b><span>${v.desc}</span></div>`
+  ).join("");
+  render(`
+    <h1 class="big">게임 시작 🎀</h1>
+    <div class="field">
+      <label>돌볼 어린이의 이름</label>
+      <input id="inpP" maxlength="10" placeholder="이름을 입력하세요" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>아기고양이의 이름</label>
+      <input id="inpC" maxlength="10" placeholder="고양이 이름을 지어주세요" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>고양이 성격 고르기</label>
+      <div class="pers-list">${persHtml}</div>
+    </div>
+    <div class="btns"><button class="primary" onclick="startGame()">이 아이로 시작! 🐾</button></div>
+  `);
+  window._selPkey = null;
+}
+function selectPers(k){
+  window._selPkey = k;
+  document.querySelectorAll(".pers").forEach(e=>e.classList.toggle("sel", e.dataset.k===k));
+}
+function startGame(){
+  const p = $("inpP").value.trim();
+  const c = $("inpC").value.trim();
+  const k = window._selPkey;
+  if(!p){ alert("어린이의 이름을 입력해주세요!"); return; }
+  if(!c){ alert("아기고양이의 이름을 지어주세요!"); return; }
+  if(!k){ alert("고양이 성격을 골라주세요!"); return; }
+  newGame(p,c,k);
+  screenDayStart();
+}
+
+// ───────────────────────────────────────────────
+// 하루 시작 (이벤트)
+// ───────────────────────────────────────────────
+function rollEvent(){
+  for(const ev of shuffle(EVENTS.slice(0,-1))){
+    if(Math.random() < ev.chance) return ev;
+  }
+  return null;
+}
+function screenDayStart(){
+  gs.event = rollEvent();
+  gs.fed = false; gs.actions = 0;
+  const ev = gs.event;
+  if(ev){
+    mod({mood:ev.mood, health:ev.health, sleep:ev.sleep});
+    render(`
+      ${statBlock()}
+      <div class="panel">
+        <h3>${gs.day}일차 아침 ☀️</h3>
+        <div class="event-banner"><b>오늘의 이벤트 · ${ev.name}</b>${C(ev.desc)}</div>
+        ${ev.hint ? `<div class="hint">💡 ${ev.hint}</div>` : ""}
+        <div class="btns"><button class="primary" onclick="screenMenu()">${gs.pname}의 하루 시작!</button></div>
+      </div>
+    `);
+  } else {
+    render(`
+      ${statBlock()}
+      <div class="panel">
+        <h3>${gs.day}일차 아침 ☀️</h3>
+        <div class="toast">오늘은 ${gs.cname}이(가) 아주 평온해 보여요. 평화로운 하루예요!</div>
+        <div class="btns"><button class="primary" onclick="screenMenu()">${gs.pname}의 하루 시작!</button></div>
+      </div>
+    `);
+  }
+}
+
+// ───────────────────────────────────────────────
+// 메인 행동 메뉴
+// ───────────────────────────────────────────────
+function screenMenu(){
+  const left = gs.max_actions - gs.actions;
+  if(left <= 0){
+    render(`${statBlock()}<div class="panel">
+      <div class="toast">오늘 할 수 있는 행동을 모두 했어요. 하루를 마무리할게요! 🌙</div>
+      <div class="btns"><button class="primary" onclick="dayEnd()">하루 마무리</button></div></div>`);
+    return;
+  }
+  const feedLabel = gs.fed ? "간식을 한 번 더 준다" : "밥을 준다";
+  render(`
+    ${statBlock()}
+    <div class="panel">
+      <h3>${gs.day}일차 · ${gs.pname}의 집사 생활</h3>
+      <div class="meter">남은 행동: ${left}번 · 오늘 밥주기: ${gs.fed?"완료! ✅":"아직 안 줬어요"}</div>
+      <div class="btns" style="margin-top:10px;">
+        <button onclick="screenFeed()">🍚 ${feedLabel}</button>
+        <button onclick="screenItem()">🎁 아이템을 사용한다</button>
+        <button onclick="doPet()">🤲 쓰다듬어준다 <span class="desc">기분 & 친밀도 상승</span></button>
+        <button class="ghost" onclick="tryFinish()">🌙 오늘은 여기까지 (하루 마무리)</button>
+      </div>
+    </div>
+  `);
+}
+function tryFinish(){
+  if(!gs.fed){
+    render(`${statBlock()}<div class="panel">
+      <div class="toast">아직 ${gs.cname}에게 밥을 주지 않았어요. 그래도 마무리할까요?</div>
+      <div class="row"><button class="primary" onclick="dayEnd()">네, 마무리할게요</button>
+      <button class="ghost" onclick="screenMenu()">아니요, 돌아갈게요</button></div></div>`);
+  } else {
+    dayEnd();
+  }
+}
+
+// ───────────────────────────────────────────────
+// 음식 주기
+// ───────────────────────────────────────────────
+function screenFeed(){
+  const btns = Object.entries(FOODS).map(([n,d])=>
+    `<button onclick="doFeed('${n}')">${n}<span class="desc">${d.desc}</span></button>`
+  ).join("");
+  render(`${statBlock()}<div class="panel">
+    <h3>${gs.cname}에게 무엇을 줄까요? 🍽️</h3>
+    <div class="btns">${btns}<button class="ghost" onclick="screenMenu()">← 돌아가기</button></div>
+  </div>`);
+}
+function doFeed(fname){
+  const fd = FOODS[fname];
+  let dh=fd.hunger, dm=fd.mood, dH=fd.health, ds=fd.sleep;
+  dm += Math.floor(gs.pers.food_bonus/2);
+
+  const sleepy = gs.sleep > 65;
+  if(sleepy){ dm-=5; dH-=3; ds+=5; }
+
+  let tummy_bad = false;
+  const ev = gs.event;
+  if(ev && ev.tummy && fname==="참치캔"){ dH-=20; tummy_bad=true; }
+  else if(fname==="참치캔"){
+    gs.tuna_streak++;
+    if(gs.tuna_streak>=3) dH-=10;
+    if(!tummy_bad && (Math.floor(Math.random()*100)+1) <= fd.tummy_risk){ dH-=15; tummy_bad=true; }
+  } else { gs.tuna_streak=0; }
+
+  const pool = FOOD_REACTIONS[fname] || {};
+  const moody = gs.mood < 30;
+  let lines;
+  if(tummy_bad)            lines = pool.tummy_bad || [`${gs.cname}이(가) 음식을 먹었어요.`];
+  else if(sleepy)          lines = pool.sleepy || pool.normal || [`${gs.cname}이(가) 먹었어요.`];
+  else if(gs.hunger>60)    lines = pool.hungry || pool.normal || [`${gs.cname}이(가) 먹었어요.`];
+  else if(moody)           lines = pool.moody || pool.normal || [`${gs.cname}이(가) 먹었어요.`];
+  else if(gs.health<40)    lines = pool.sick || pool.normal || [`${gs.cname}이(가) 먹었어요.`];
+  else if(gs.mood>65)      lines = pool.happy || pool.normal || [`${gs.cname}이(가) 먹었어요.`];
+  else                     lines = pool.normal || [`${gs.cname}이(가) 먹었어요.`];
+
+  const reaction = C(pick(lines));
+  mod({hunger:dh, mood:dm, health:dH, sleep:ds, affection:3});
+  gs.fed = true; gs.actions++;
+
+  const ch=[];
+  if(dh<0) ch.push(["배고픔 -"+Math.abs(dh),false]);
+  if(dm>0) ch.push(["기분 +"+dm,false]); else if(dm<0) ch.push(["기분 -"+Math.abs(dm),true]);
+  if(dH>0) ch.push(["건강 +"+dH,false]); else if(dH<0) ch.push(["건강 -"+Math.abs(dH),true]);
+  if(ds>0) ch.push(["졸림 +"+ds,true]);
+  showReaction(reaction, ch);
+}
+
+// ───────────────────────────────────────────────
+// 아이템 사용
+// ───────────────────────────────────────────────
+function screenItem(){
+  const avail = Object.entries(gs.inv).filter(([,v])=>v>0);
+  if(avail.length===0){
+    render(`${statBlock()}<div class="panel">
+      <div class="toast">아이템이 없어요! 밤에 별점 상점에서 구매할 수 있어요. 🛒</div>
+      <div class="btns"><button class="ghost" onclick="screenMenu()">← 돌아가기</button></div></div>`);
+    return;
+  }
+  const btns = avail.map(([n,c])=>
+    `<button onclick="doItem('${n}')">${n} <span class="desc">남은 수량 ${c}개 · ${ITEMS[n].desc}</span></button>`
+  ).join("");
+  render(`${statBlock()}<div class="panel">
+    <h3>어떤 아이템을 사용할까요? 🎁</h3>
+    <div class="btns">${btns}<button class="ghost" onclick="screenMenu()">← 사용하지 않기</button></div>
+  </div>`);
+}
+function doItem(iname){
+  const idata = ITEMS[iname];
+
+  // 졸릴 때 놀이 아이템 패널티
+  if(idata.type==="play" && gs.sleep>65){
+    mod({sleep:10, mood:-5});
+    gs.inv[iname]--; gs.actions++;
+    showReaction(`${gs.cname}이(가) 너무 졸려서 제대로 놀지 못했어요.`,
+      [["기분 -5",true],["졸림 +10",true]]);
+    return;
+  }
+  // 장난감 싫증 이벤트
+  const ev = gs.event;
+  if(ev && ev.toy_bored && idata.type==="play" && (iname==="깃털 장난감"||iname==="작은 공")){
+    mod({mood:5});
+    gs.inv[iname]--; gs.actions++;
+    showReaction(`오늘은 ${gs.cname}이(가) 이 장난감에 별 관심이 없어 보여요.`, [["기분 +5",false]]);
+    return;
+  }
+
+  // 놀이 아이템은 성격의 play_bonus 만큼 기분이 더 오릅니다
+  const moodGain = idata.mood + (idata.type==="play" ? gs.pers.play_bonus : 0);
+  const reaction = C(pick(ITEM_REACTIONS[iname] || [`${gs.cname}이(가) 아이템을 사용했어요.`]));
+  mod({hunger:idata.hunger, mood:moodGain, health:idata.health, sleep:idata.sleep, affection:5});
+  gs.inv[iname]--; gs.actions++;
+
+  const ch=[];
+  if(moodGain>0) ch.push(["기분 +"+moodGain,false]);
+  if(idata.health>0) ch.push(["건강 +"+idata.health,false]);
+  if(idata.sleep<0) ch.push(["졸림 -"+Math.abs(idata.sleep),false]);
+  if(idata.sleep>0) ch.push(["졸림 +"+idata.sleep,true]);
+  showReaction(reaction, ch);
+}
+
+// ───────────────────────────────────────────────
+// 쓰다듬기
+// ───────────────────────────────────────────────
+function doPet(){
+  let lines, dm;
+  if(gs.mood>=30){
+    lines=[
+      `${gs.cname}이(가) 쓰다듬는 손에 얼굴을 비볐어요!`,
+      `${gs.cname}이(가) '그르릉...' 소리를 내며 눈을 가늘게 떴어요.`,
+      `등을 쓰다듬자 ${gs.cname}이(가) 꼬리를 세웠어요.`,
+      `${gs.cname}이(가) 쓰다듬는 손을 핥았어요! 간질간질해요.`,
+    ]; dm=10;
+  } else {
+    lines=[
+      `오늘은 기분이 안 좋은지 ${gs.cname}이(가) 슬쩍 피했어요.`,
+      `${gs.cname}이(가) 손을 가만히 바라보다가 고개를 돌렸어요.`,
+    ]; dm=3;
+  }
+  mod({mood:dm, affection:8});
+  gs.actions++;
+  showReaction(pick(lines), [["기분 +"+dm,false],["친밀도 +8",false]]);
+}
+
+// ───────────────────────────────────────────────
+// 반응 표시 → 메뉴 복귀
+// ───────────────────────────────────────────────
+function showReaction(text, changes){
+  const chips = (changes||[]).map(([t,bad])=>`<span class="chip${bad?' bad':''}">${t}</span>`).join("");
+  render(`${statBlock()}<div class="panel">
+    <div class="react">💬 ${text}</div>
+    ${chips?`<div class="changes">${chips}</div>`:""}
+    <div class="btns"><button class="primary" onclick="screenMenu()">계속하기</button></div>
+  </div>`);
+}
+
+// ───────────────────────────────────────────────
+// 하루 평가
+// ───────────────────────────────────────────────
+function calcStars(){
+  let s=0;
+  if(gs.hunger<30) s+=2; else if(gs.hunger<50) s+=1; else if(gs.hunger>70) s-=2;
+  if(gs.mood>=65) s+=2; else if(gs.mood>=45) s+=1; else if(gs.mood<25) s-=2; else s-=1;
+  if(gs.health>=70) s+=2; else if(gs.health>=50) s+=1; else if(gs.health<30) s-=3; else s-=1;
+  if(gs.sleep<40) s+=1; else if(gs.sleep>75) s-=1;
+  if(gs.affection>=60) s+=1;
+  if(!gs.fed) s-=3;
+  if(s>=7) return 5; if(s>=5) return 4; if(s>=3) return 3; if(s>=1) return 2; return 1;
+}
+function dayEnd(){
+  const earned = calcStars();
+  gs.total_stars += earned;
+  gs.day_stars.push(earned);
+  const comment = C(pick(OWNER_LINES[earned] || OWNER_LINES[3]));
+  render(`${statBlock()}<div class="panel">
+    <h3>${gs.day}일차 마무리 · 주인 방문 🌙</h3>
+    <div class="toast">밤이 되었어요. ${gs.cname}의 주인이 찾아왔어요...</div>
+    <div class="react">💬 ${comment}</div>
+    <div class="center" style="margin:10px 0;font-size:22px;">
+      ${"★".repeat(earned)}${"☆".repeat(5-earned)}
+      <div class="meter">오늘의 평가 ${earned}점 · 누적 별점 ${gs.total_stars}개 ⭐</div>
+    </div>
+    <div class="btns"><button class="primary" onclick="screenShopPrompt()">계속</button></div>
+  </div>`);
+}
+
+// ───────────────────────────────────────────────
+// 상점
+// ───────────────────────────────────────────────
+function screenShopPrompt(){
+  render(`${statBlock()}<div class="panel">
+    <h3>별점 상점 🛒</h3>
+    <div class="toast">하루가 끝났어요! 현재 별점: ${gs.total_stars}개 ⭐<br>상점에 들러 아이템을 살 수 있어요.</div>
+    <div class="btns">
+      <button class="primary" onclick="screenShop()">상점에 간다</button>
+      <button class="ghost" onclick="nextDay()">다음 날로 넘어간다</button>
+    </div></div>`);
+}
+function screenShop(){
+  const items = Object.entries(ITEMS).map(([n,d])=>{
+    const owned = gs.inv[n];
+    const canBuy = gs.total_stars>=d.cost && owned<d.max;
+    const why = owned>=d.max ? `최대 ${d.max}개` : (gs.total_stars<d.cost ? `별 ${d.cost}개 필요` : `별 ${d.cost}개`);
+    return `<button ${canBuy?"":"disabled"} onclick="buy('${n}')">
+      ${n} <span class="desc">${why} · 보유 ${owned}개 · ${d.desc}</span></button>`;
+  }).join("");
+  render(`${statBlock()}<div class="panel">
+    <h3>★ 별점 상점 ★</h3>
+    <div class="meter">보유 별점: ${gs.total_stars}개 ⭐</div>
+    <div class="btns" style="margin-top:10px;">${items}
+      <button class="primary" onclick="nextDay()">상점 나가기 →</button></div>
+  </div>`);
+}
+function buy(iname){
+  const d = ITEMS[iname];
+  if(gs.total_stars>=d.cost && gs.inv[iname]<d.max){
+    gs.total_stars -= d.cost;
+    gs.inv[iname]++;
+  }
+  screenShop();
+}
+
+// ───────────────────────────────────────────────
+// 하룻밤 지나기 / 다음 날
+// ───────────────────────────────────────────────
+function overnight(){
+  mod({
+    hunger:20,
+    sleep:-30,
+    mood: gs.sleep<60 ? 5 : -5,
+    health: gs.health<90 ? 5 : 0,
+    affection:2,
+  });
+  gs.fed=false; gs.actions=0; gs.event=null;
+}
+function nextDay(){
+  if(gs.day>=7){ screenEnding(); return; }
+  overnight();
+  gs.day++;
+  screenDayStart();
+}
+
+// ───────────────────────────────────────────────
+// 엔딩
+// ───────────────────────────────────────────────
+function screenEnding(){
+  const total = gs.day_stars.reduce((a,b)=>a+b,0);
+  const avg = total / gs.day_stars.length;
+  let title, emoji, lines, tag;
+  if(avg>=4.0 && gs.health>=60 && gs.mood>=55){
+    title="최고의 집사 엔딩"; emoji="🏆😻"; tag="★★★";
+    lines=[
+      `${gs.cname}은(는) 주인을 보자 반갑게 울었지만, 곧 ${gs.pname}의 다리에도 얼굴을 비볐어요.`,
+      `주인이 환하게 웃으며 말했어요. "정말 고마워요. ${gs.cname}이(가) 전보다 더 건강하고 행복해 보여요. ${gs.pname}, 당신은 최고의 임시 집사예요!"`,
+      `${gs.cname}이(가) 마지막으로 '냐아~' 하고 울었어요. 행복한 작별이에요.`,
+    ];
+  } else if(avg>=2.5 || gs.health>=45){
+    title="괜찮은 집사 엔딩"; emoji="😺💕"; tag="★★";
+    lines=[
+      `주인이 ${gs.cname}의 상태를 살펴보고 고개를 끄덕였어요. "조금 서툰 날도 있었지만, 정성껏 돌봐준 게 느껴져요. ${gs.pname}, 수고했어요."`,
+      `${gs.cname}은(는) 작은 소리로 울며 ${gs.pname}을(를) 바라보았어요. 다음엔 더 잘할 수 있을 것 같아요!`,
+    ];
+  } else {
+    title="아쉬운 집사 엔딩"; emoji="😿"; tag="";
+    lines=[
+      `주인이 걱정스러운 얼굴로 ${gs.cname}을(를) 꼭 안았어요. "아기고양이를 돌보는 건 생각보다 세심한 일이에요. 다음에는 ${gs.cname}의 상태를 더 잘 살펴주세요."`,
+      `${gs.cname}은(는) 피곤한 듯 주인의 품에 가만히 안겨 있었어요. 다음엔 더 잘할 수 있어요. 힘내요, ${gs.pname}!`,
+    ];
+  }
+  const record = gs.day_stars.map((s,i)=>`${i+1}일차 ${"★".repeat(s)}${"☆".repeat(5-s)}`).join("<br>");
+  render(`
+    <div class="ending">
+      <div class="cat-stage"><div class="cat-emoji" style="font-size:54px;">${emoji}</div></div>
+      <div class="ending-title">${title} ${tag}</div>
+      <div class="react center">${lines.map(l=>"💬 "+l).join("<br><br>")}</div>
+      <div class="day-record">${record}<br><br>
+        총 별점 <b>${gs.total_stars}개</b> ⭐ · 하루 평균 <b>${avg.toFixed(1)}점</b><br>
+        ${gs.cname}의 최종 상태 — 건강 ${gs.health} / 기분 ${gs.mood}</div>
+      <div class="btns"><button class="primary" onclick="screenIntro()">다시 돌보기 🐾</button></div>
+    </div>
+  `);
+}
+
+// 시작
+screenIntro();
+</script>
+</body>
+</html>
