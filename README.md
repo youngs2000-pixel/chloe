@@ -30,9 +30,19 @@ Gemini Flash 로 고양이 반응·주인 평가·**오늘의 고양이 일기**
 - AI 호출이 실패하거나 꺼져 있어도 **기존 내장 문장으로 정상 작동**해요.
 - 시작 화면에서 **AI 이야기 모드 켜기/끄기** 토글 제공.
 
+### 백엔드 구조
+게임(`index.html`)은 **GitHub Pages** 에 그대로 두고, AI 프록시만 **Vercel Serverless Function**(`api/generate-cat-text.js`)으로 둡니다.
+
+```
+브라우저(GitHub Pages) → Vercel /api/generate-cat-text → Gemini Flash → {text} 반환
+```
+
+> ⚠️ Cloudflare Workers 에서 Gemini 를 호출하면 `User location is not supported`(지역 차단)가
+> 발생해서, AI 프록시는 미국 리전에서 도는 **Vercel** 로 옮겼습니다. `worker/` 폴더는 참고용 대안입니다.
+
 ### 켜는 방법 (요약)
-1. `worker/` 폴더의 [README](worker/README.md) 대로 Cloudflare Worker 를 배포해요.
-2. 배포 주소를 `index.html` 맨 위의 `AI_ENDPOINT` 에 붙여넣어요.
+1. Vercel 에 이 저장소를 import 하고, 환경변수 `GEMINI_API_KEY` 를 등록해요.
+2. 배포된 함수 주소(`https://<프로젝트>.vercel.app/api/generate-cat-text`)를 `index.html` 맨 위 `AI_ENDPOINT` 에 붙여넣어요.
 3. 커밋·push 하면 끝! (`AI_ENDPOINT` 가 비어 있으면 AI 없이 기본 문장으로 플레이됩니다.)
 
 ## 💻 직접 실행하기
@@ -44,9 +54,9 @@ Gemini Flash 로 고양이 반응·주인 평가·**오늘의 고양이 일기**
 | 파일 | 설명 |
 |------|------|
 | `index.html` | 브라우저용 게임 (HTML + CSS + JavaScript, v2.0 AI 레이어 포함) |
-| `worker/worker.js` | Cloudflare Worker — Gemini Flash 프록시 (API Key 보호) |
-| `worker/wrangler.toml` | Worker 배포 설정 |
-| `worker/README.md` | Worker 배포 가이드 |
+| `api/generate-cat-text.js` | **Vercel Serverless Function** — Gemini Flash 프록시 (현재 사용 중, API Key 보호) |
+| `vercel.json` | Vercel 배포 설정 (미국 리전 고정) |
+| `worker/` | Cloudflare Worker 버전 (참고용 대안 — Gemini 지역 차단으로 미사용) |
 | `아기고양이_임시_집사.py` | 원본 파이썬(터미널) 버전 |
 | `아기고양이 임시 집사 게임 개요.docx` | 기획 문서 |
 | `아기고양이임시집사v2.docx` | v2.0 개발 요청서(가이드라인) |
