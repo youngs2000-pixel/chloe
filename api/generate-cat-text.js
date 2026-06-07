@@ -16,9 +16,10 @@
 
 const GEMINI_MODEL = "gemini-2.5-flash";
 
-// 이 API 를 호출할 수 있는 출처(origin) 허용 목록. 본인 GitHub Pages 주소.
+// 이 API 를 호출할 수 있는 출처(origin) 허용 목록.
 const ALLOWED_ORIGIN_PREFIXES = [
-  "https://youngs2000-pixel.github.io",
+  "https://youngs2000-pixel.github.io", // GitHub Pages
+  "https://chloe-nu.vercel.app",        // Vercel 배포본에서 플레이할 때
   "http://localhost",
   "http://127.0.0.1",
 ];
@@ -59,26 +60,29 @@ module.exports = async function handler(req, res) {
 
     const prompt = buildPrompt(payload);
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-      {
+    const body = JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 1.0,
+        topP: 0.95,
+        maxOutputTokens: 512,
+        // 2.5-flash 는 thinking 에 토큰을 먼저 쓰므로 끄지 않으면 빈 응답이 날 수 있음
+        thinkingConfig: { thinkingBudget: 0 },
+      },
+    });
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
+    // 과부하(503)/속도제한(429) 시 짧게 재시도
+    let response;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      response = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": process.env.GEMINI_API_KEY,
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 1.0,
-            topP: 0.95,
-            maxOutputTokens: 512,
-            // 2.5-flash 는 thinking 에 토큰을 먼저 쓰므로 끄지 않으면 빈 응답이 날 수 있음
-            thinkingConfig: { thinkingBudget: 0 },
-          },
-        }),
-      }
-    );
+        headers: { "Content-Type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY },
+        body,
+      });
+      if (response.ok || (response.status !== 503 && response.status !== 429)) break;
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 700 * (attempt + 1)));
+    }
 
     if (!response.ok) {
       const detail = await response.text();
