@@ -6,9 +6,17 @@ __pycache__/
 Thumbs.db
 .DS_Store
 
+# MS Office 임시 잠금 파일
+~$*
+
 # Editor
 .vscode/
 .idea/
 
 # Claude Code 로컬 설정
 .claude/
+
+# Node / Cloudflare Wrangler
+node_modules/
+.wrangler/
+.dev.vars

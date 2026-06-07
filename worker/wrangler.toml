@@ -1,0 +1,7 @@
+name = "chloe-cat-ai"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# GEMINI_API_KEY 는 여기에 적지 말 것! (공개되면 위험)
+# 아래 명령으로 시크릿(암호화 저장)으로 등록하세요:
+#   wrangler secret put GEMINI_API_KEY

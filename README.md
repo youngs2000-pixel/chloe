@@ -20,17 +20,36 @@
 - 까칠한 날, 낯선 소리, 창가 햇살 등 랜덤 이벤트 10종.
 - 설치 없이 브라우저에서 바로 플레이 — 단일 `index.html` 파일.
 
+## ✨ v2.0 — AI 이야기 모드 (선택)
+
+Gemini Flash 로 고양이 반응·주인 평가·**오늘의 고양이 일기**·**엔딩 편지**를
+매번 다르게 생성해요. 같은 선택을 해도 성격·이벤트·상태에 따라 문장이 달라집니다.
+
+- **게임 규칙은 그대로 JavaScript 가 계산**해요. AI 는 "이야기 작가" 역할만 합니다.
+- **API Key 는 브라우저에 절대 넣지 않아요.** Cloudflare Worker 를 거쳐 호출합니다.
+- AI 호출이 실패하거나 꺼져 있어도 **기존 내장 문장으로 정상 작동**해요.
+- 시작 화면에서 **AI 이야기 모드 켜기/끄기** 토글 제공.
+
+### 켜는 방법 (요약)
+1. `worker/` 폴더의 [README](worker/README.md) 대로 Cloudflare Worker 를 배포해요.
+2. 배포 주소를 `index.html` 맨 위의 `AI_ENDPOINT` 에 붙여넣어요.
+3. 커밋·push 하면 끝! (`AI_ENDPOINT` 가 비어 있으면 AI 없이 기본 문장으로 플레이됩니다.)
+
 ## 💻 직접 실행하기
 
-`index.html` 파일을 더블클릭해서 브라우저로 열기만 하면 돼요.
+`index.html` 파일을 더블클릭해서 브라우저로 열기만 하면 돼요. (AI 미설정 시 기본 문장으로 동작)
 
 ## 📁 파일
 
 | 파일 | 설명 |
 |------|------|
-| `index.html` | 브라우저용 게임 (HTML + CSS + JavaScript) |
+| `index.html` | 브라우저용 게임 (HTML + CSS + JavaScript, v2.0 AI 레이어 포함) |
+| `worker/worker.js` | Cloudflare Worker — Gemini Flash 프록시 (API Key 보호) |
+| `worker/wrangler.toml` | Worker 배포 설정 |
+| `worker/README.md` | Worker 배포 가이드 |
 | `아기고양이_임시_집사.py` | 원본 파이썬(터미널) 버전 |
 | `아기고양이 임시 집사 게임 개요.docx` | 기획 문서 |
+| `아기고양이임시집사v2.docx` | v2.0 개발 요청서(가이드라인) |
 
 ## 📜 라이선스
 
